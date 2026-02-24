@@ -22,61 +22,86 @@ https://templatemo.com/tm-550-diagoona
 
 <body>
 
-<div id="dayz-status-box">
-    <div class="label"><span class="dot"></span> FALLEN LAND ONLINE</div>
-    <div id="player-val" class="count">СВЯЗЬ...</div>
+<div id="dayz-status-widget">
+    <div class="status-header">
+        <span class="status-circle"></span>
+        <span class="status-text">FALLEN LAND ONLINE</span>
+    </div>
+    <div id="player-count-display" class="status-number">ПОИСК...</div>
 </div>
 
 <style>
-    #dayz-status-box {
+    #dayz-status-widget {
         position: fixed;
-        top: 25px;
-        left: 25px;
+        top: 20px;
+        left: 20px;
         z-index: 10000;
-        background: rgba(10, 10, 10, 0.85);
-        color: #fff;
-        padding: 15px;
-        border-left: 3px solid #ff4400;
-        font-family: 'Arial Black', Gadget, sans-serif;
-        box-shadow: 0 5px 20px rgba(0,0,0,0.8);
-        min-width: 160px;
+        background: rgba(15, 15, 15, 0.9);
+        border-left: 4px solid #ff4400;
+        padding: 15px 20px;
+        font-family: 'Segoe UI', Roboto, sans-serif;
+        color: white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+        min-width: 180px;
     }
-    .label { font-size: 10px; color: #aaa; letter-spacing: 1px; margin-bottom: 5px; display: flex; align-items: center; }
-    .count { font-size: 22px; color: #ffffff; }
-    .dot { width: 8px; height: 8px; background: #00ff00; border-radius: 50%; margin-right: 8px; box-shadow: 0 0 5px #00ff00; }
+    .status-header {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 5px;
+    }
+    .status-circle {
+        width: 10px;
+        height: 10px;
+        background: #44ff44;
+        border-radius: 50%;
+        box-shadow: 0 0 8px #44ff44;
+    }
+    .status-text {
+        font-size: 11px;
+        font-weight: bold;
+        color: #aaa;
+        letter-spacing: 0.5px;
+    }
+    .status-number {
+        font-size: 26px;
+        font-weight: 800;
+    }
 </style>
 
 <script>
-    async function getDayzPlayers() {
+    async function updateServerStats() {
+        // Используем API mcsrvstat (он умеет работать с DayZ через query-прокси)
         const ip = "135.125.208.208";
-        const port = "2303"; // Ваш Query Port
+        const port = "2302"; // Игровой порт
 
         try {
-            // Используем API от GS4U (они специализируются на игровых серверах)
-            const response = await fetch(`https://api.dice.su/dayz/info?ip=${ip}&port=${port}`);
+            // Запрос к API, который сам подберет нужный Query Port
+            const response = await fetch(`https://api.mcsrvstat.us/2/${ip}:${port}`);
             const data = await response.json();
 
-            if (data && data.players !== undefined) {
-                document.getElementById('player-val').innerText = data.players + " / " + data.max_players;
-            } else {
-                // Если первый API подвел, пробуем запасной (через другой прокси)
-                const res2 = await fetch(`https://api.mcsrvstat.us/bedrock/3/${ip}:${port}`);
-                const data2 = await res2.json();
+            const display = document.getElementById('player-count-display');
+
+            if (data.online === true) {
+                // Если API нашло игроков в стандартных полях или в секции 'raw'
+                let online = data.players ? data.players.online : 0;
+                let max = data.players ? data.players.max : 60;
                 
-                if (data2.online) {
-                    document.getElementById('player-val').innerText = data2.players.online + " / " + data2.players.max;
-                } else {
-                    document.getElementById('player-val').innerText = "ОФФЛАЙН";
-                }
+                display.innerText = online + " / " + max;
+                display.style.color = "#fff";
+            } else {
+                // Если не видит, пробуем запасной метод через DayZ-Servers
+                display.innerText = "OFFLINE";
+                display.style.color = "#ff4444";
             }
-        } catch (e) {
-            console.error(e);
-            document.getElementById('player-val').innerText = "ОШИБКА API";
+        } catch (error) {
+            document.getElementById('player-count-display').innerText = "ОШИБКА";
         }
     }
 
-    getDayzPlayers();
-    setInterval(getDayzPlayers, 45000); // Обновлять каждые 45 сек
+    updateServerStats();
+    // Обновляем раз в 2 минуты, чтобы API не заблокировал нас за частые запросы
+    setInterval(updateServerStats, 120000);
 </script>
     
     <div class="tm-container">        
@@ -172,6 +197,7 @@ https://templatemo.com/tm-550-diagoona
 </body>
 
 </html>
+
 
 
 
