@@ -21,6 +21,81 @@ https://templatemo.com/tm-550-diagoona
 </head>
 
 <body>
+
+    <style>
+    #server-widget {
+        position: fixed; /* Фиксируем в углу экрана */
+        top: 20px;
+        left: 20px;
+        z-index: 9999;
+        background: rgba(0, 0, 0, 0.8); /* Полупрозрачный черный фон */
+        color: #e0e0e0;
+        padding: 15px;
+        border-radius: 4px;
+        border-left: 3px solid #ff4400; /* Оранжевая полоска в стиле DayZ */
+        font-family: 'Courier New', Courier, monospace; /* "Военный" шрифт */
+        box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        min-width: 150px;
+        pointer-events: none; /* Чтобы не мешало кликать по сайту */
+    }
+    .widget-title {
+        font-size: 10px;
+        text-transform: uppercase;
+        color: #888;
+        margin-bottom: 5px;
+    }
+    .widget-value {
+        font-size: 18px;
+        font-weight: bold;
+        color: #fff;
+    }
+    .status-online {
+        color: #44ff44;
+        font-size: 10px;
+    }
+</style>
+
+<div id="server-widget">
+    <div class="widget-title">Статус сервера <span class="status-online">●</span></div>
+    <div id="player-count" class="widget-value">Загрузка...</div>
+    
+    <div style="margin-top: 10px;" class="widget-title">Время суток</div>
+    <div id="server-time" class="widget-value">--:--</div>
+</div>
+
+<script>
+    async function updateServerStats() {
+        // ЗАМЕНИТЕ ЭТОТ ID НА ВАШ ID С САЙТА dayz-servers.org
+        const SERVER_ID = "176798"; 
+        
+        try {
+            // Запрашиваем данные через API мониторинга
+            const response = await fetch(`https://api.dayz-servers.org/server/${SERVER_ID}`);
+            const data = await response.json();
+
+            if (data) {
+                // Обновляем количество игроков
+                document.getElementById('player-count').innerText = 
+                    `${data.players} / ${data.max_players}`;
+
+                // ВАЖНО: Время суток передается не всеми серверами. 
+                // Если API его отдает, выводим. Если нет - пишем "В игре"
+                const time = data.time || "ДЕНЬ"; 
+                document.getElementById('server-time').innerText = time;
+            }
+        } catch (error) {
+            console.error("Ошибка получения данных:", error);
+            document.getElementById('player-count').innerText = "OFFLINE";
+        }
+    }
+
+    // Запускаем обновление сразу
+    updateServerStats();
+    
+    // Обновляем каждые 2 минуты (чаще мониторинги обычно не обновляют данные)
+    setInterval(updateServerStats, 120000);
+</script>
+    
     <div class="tm-container">        
         <div>
             <div class="tm-row pt-4">
@@ -114,6 +189,7 @@ https://templatemo.com/tm-550-diagoona
 </body>
 
 </html>
+
 
 
 
