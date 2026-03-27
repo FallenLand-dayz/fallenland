@@ -361,27 +361,29 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
-		<script>
-    window.onload = function() {
-        // Список ваших картинок (укажите свои названия файлов)
+<script>
+    window.addEventListener('load', function() {
         var images = [
-            'images/bg.jpg', 
-            'images/bg1.jpg', 
+            'images/bg.jpg',
+            'images/bg1.jpg',
             'images/bg2.jpg',
             'images/bg3.jpg'
         ];
 
-        // Выбираем случайную картинку
         var randomImage = images[Math.floor(Math.random() * images.length)];
-
-        // Устанавливаем её на блок #bg
         var bg = document.getElementById('bg');
-        
-        // Добавляем стили напрямую, сохраняя эффекты шаблона
-        bg.style.backgroundImage = 'url("images/overlay.png"), url("' + randomImage + '")';
-        bg.style.backgroundSize = 'auto, cover';
-        bg.style.backgroundPosition = 'center, center';
-    };
+
+        if (bg) {
+            // Устанавливаем фон. Если overlay.png нет, используй только вторую часть с randomImage
+            bg.style.setProperty('background-image', 'url("images/overlay.png"), url("' + randomImage + '")', 'important');
+            bg.style.backgroundSize = 'auto, cover';
+            bg.style.backgroundPosition = 'center, center';
+            
+            console.log('Текущий фон:', randomImage); // Проверка в консоли (F12)
+        } else {
+            console.error('Блок с id="bg" не найден!');
+        }
+    });
 </script>
 
 	</body>
