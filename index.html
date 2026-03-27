@@ -359,5 +359,28 @@ print 'It took ' + i + ' iterations to sort the deck.';</code></pre>
 			<script src="assets/js/util.js"></script>
 			<script src="assets/js/main.js"></script>
 
+		<script>
+    window.onload = function() {
+        // Список ваших картинок (укажите свои названия файлов)
+        var images = [
+            'images/bg.jpg', 
+            'images/bg1.jpg', 
+            'images/bg2.jpg',
+            'images/bg3.jpg'
+        ];
+
+        // Выбираем случайную картинку
+        var randomImage = images[Math.floor(Math.random() * images.length)];
+
+        // Устанавливаем её на блок #bg
+        var bg = document.getElementById('bg');
+        
+        // Добавляем стили напрямую, сохраняя эффекты шаблона
+        bg.style.backgroundImage = 'url("images/overlay.png"), url("' + randomImage + '")';
+        bg.style.backgroundSize = 'auto, cover';
+        bg.style.backgroundPosition = 'center, center';
+    };
+</script>
+
 	</body>
 </html>
